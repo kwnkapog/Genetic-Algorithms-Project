@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from difflib import get_close_matches
 import utils as ul
+import importlib
+importlib.reload(ul)
 
 # Initialize the pandas dataframe
 df = pd.read_csv('iphi2802.csv', delimiter='\t')
@@ -12,7 +14,7 @@ df_filtered= df.query("region_main_id == 1693")
 
 # Initalize the tf-idf Vectorizer and transform the text column of the dataframe.
 vectorizer = TfidfVectorizer()
-index_matrix = vectorizer.fit_transform(df_filtered['text'].to_list())
+index_matrix = vectorizer.fit_transform(df_filtered['text'].to_list()).toarray()
 
 vocab_dict = ul.print_vectorizer_info(vectorizer, index_matrix, True)
 

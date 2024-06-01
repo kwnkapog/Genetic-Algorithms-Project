@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from IPython.display import display
+from sklearn.metrics.pairwise import cosine_similarity
 
 def print_dataframe_info(df):
     """
@@ -27,13 +27,23 @@ def print_vectorizer_info(vectorizer, matrix, printMatrix):
     """
     vocab = vectorizer.get_feature_names_out()
     vocab_dict = {i: vocab[i] for i in range(len(vocab))}
-    display(f"The dictionary of the dataset: {vocab}")
-    display(f"The shape of the output matrix: {matrix.shape}")
+    print(f"The dictionary of the dataset: {vocab}")
+    print(f"The shape of the output matrix: {matrix.shape}")
     if printMatrix: 
-        display(f"The matrix: {matrix.toarray()}")
-    display(f"The unique values of the output matrix: {np.unique(matrix)}")
+        print(f"The matrix: {matrix}")
+    print(f"The unique values of the output matrix: {np.unique(matrix)}")
     return vocab_dict
 
-def fitness_func(solution, solution_idx):
+
+def find_k_nearest(k, matrix, incomplete_vector):
+    similarities = []
+    for row in matrix:
+        similarity = cosine_similarity(row, incomplete_vector)
+        similarities.append(similarity)
+        
+    return k_nearest_indexes, k_nearest_values
+
+
+def fitness_func(ga_instance, solution, solution_idx):
     first_word_idx, second_word_idx = solution
     
