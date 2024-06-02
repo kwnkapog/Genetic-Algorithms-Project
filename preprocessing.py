@@ -15,7 +15,6 @@ df_filtered= df.query("region_main_id == 1693")
 # Initalize the tf-idf Vectorizer and transform the text column of the dataframe.
 vectorizer = TfidfVectorizer()
 index_matrix = vectorizer.fit_transform(df_filtered['text'].to_list()).toarray()
-
 vocab_dict = ul.print_vectorizer_info(vectorizer, index_matrix, True)
 
 # Find the word closest to the missing word 'αλεξανδρε' and turn the incomplete inscription into a tf-idf vector
@@ -24,6 +23,14 @@ replaced_word = get_close_matches(missing_word, vocab_dict.values(), n=1)
 replaced_inscription = f'{replaced_word} ουδις'
 incomplete_vector = vectorizer.transform([replaced_inscription]).toarray()
 
-test_matrix = np.array([[1,2,3],[4,5,6],[4,6,6]])
-test_target = np.array([7,8,9])
-indexes, values = ul.find_k_nearest(2,test_matrix,test_target)
+# Fitness function to use with GA
+def fitness_func(ga_instance, solution, solution_idx):
+    left_word_idx, right_word_idx = solution
+    
+    #scenario if the indices are out of range.
+    
+    left_word = vocab_dict[left_word_idx]
+    right_word = vocab_dict[right_word_idx]
+    replaced_inscription = f'{left_word} αλεξανδρε ουδις {right_word}'
+    
+    replaced_vector = vectorizer.transform([replaced_inscription])

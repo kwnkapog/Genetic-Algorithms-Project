@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+
 def print_dataframe_info(df):
     """
     Prints information of a dataset on a pandas dataframe. 
@@ -24,6 +25,10 @@ def print_vectorizer_info(vectorizer, matrix, printMatrix):
         vectorizer (TFIdfVectorizer obj): The object of the TfIdfVectorizer class.
         matrix (csr): The matrix containing the encoded inscriptions.
         printMatrix (boolean): Determines whether or not the actual matrix is printed.
+    
+    Returns:
+        dictionary: The indexed dictionary of the vectorizer.
+        
     """
     vocab = vectorizer.get_feature_names_out()
     vocab_dict = {i: vocab[i] for i in range(len(vocab))}
@@ -45,7 +50,8 @@ def find_k_nearest(k, matrix, incomplete_vector):
         incomplete_vector (np array): The vector containing the incomplete target inscription.
 
     Returns:
-        _type_: _description_
+        np array: the indices of the discriptions closest to the incomplete target inscription.
+        np array: The values of the cosine similarity between the incomplete target inscription and the ones closest to it.
     """
     similarities = []
     incomplete_vector = np.array(incomplete_vector).reshape(1, -1)
@@ -60,7 +66,10 @@ def find_k_nearest(k, matrix, incomplete_vector):
     
     return top_k_indices, top_k_values    
 
+# testing the find_k_nearest function
+index_matrix = np.array([[1,2,3],[4,6,6],[4,5,6]])
+test_target = np.array([7,8,9])
+indexes, values = find_k_nearest(2,index_matrix,test_target)
 
-def fitness_func(ga_instance, solution, solution_idx):
-    first_word_idx, second_word_idx = solution
+
     
