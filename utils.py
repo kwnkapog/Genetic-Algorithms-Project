@@ -36,12 +36,29 @@ def print_vectorizer_info(vectorizer, matrix, printMatrix):
 
 
 def find_k_nearest(k, matrix, incomplete_vector):
+    """
+    Finds the k closest inscriptions to a target inscription, using cosine similarity to compare them.
+
+    Args:
+        k (int): The number of closest neighbours .
+        matrix (np array): The matrix containing the tf-idf encoded inscriptions.
+        incomplete_vector (np array): The vector containing the incomplete target inscription.
+
+    Returns:
+        _type_: _description_
+    """
     similarities = []
+    incomplete_vector = np.array(incomplete_vector).reshape(1, -1)
+    
     for row in matrix:
-        similarity = cosine_similarity(row, incomplete_vector)
+        row = row.reshape(1, -1)
+        similarity = cosine_similarity(row, incomplete_vector)[0][0]
         similarities.append(similarity)
-        
-    return k_nearest_indexes, k_nearest_values
+    top_k_indices = np.argsort(similarities)[-k:][::-1]
+    
+    top_k_values = np.array([similarities[i] for i in top_k_indices])
+    
+    return top_k_indices, top_k_values    
 
 
 def fitness_func(ga_instance, solution, solution_idx):

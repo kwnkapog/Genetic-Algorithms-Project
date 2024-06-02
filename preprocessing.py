@@ -24,3 +24,6 @@ replaced_word = get_close_matches(missing_word, vocab_dict.values(), n=1)
 replaced_inscription = f'{replaced_word} ουδις'
 incomplete_vector = vectorizer.transform([replaced_inscription]).toarray()
 
+test_matrix = np.array([[1,2,3],[4,5,6],[4,6,6]])
+test_target = np.array([7,8,9])
+indexes, values = ul.find_k_nearest(2,test_matrix,test_target)
