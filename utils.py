@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from  scipy.stats import qmc
+import pygad
 
 
 def print_dataframe_info(df):
@@ -67,29 +68,64 @@ def find_k_nearest(k, matrix, incomplete_vector):
     
     return top_k_indices, top_k_values    
 
-def create_initial_populations(num_populations, num_chromosomes):
+def create_initial_populations(num_populations, population_size):
     """
     Creates the initial populations of the genetic algorithm by constructing the appropriate chromosomes, ranged within the specific values. 
 
     Args:
         num_populations (int): The number of initial populations .
-        num_chromosomes (int): The number of chromosomes per population.
+        population_size (int): The number of chromosomes per population.
 
     Returns:
         np array: An array consisting of all the initialized populations.
         np array: The values of the cosine similarity between the incomplete target inscription and the ones closest to it.
     """
-    populations = []
+    init_populations = []
     
     for _ in range(num_populations):
         sampler = qmc.LatinHypercube(d=2)
-        samples = sampler.random(n= num_chromosomes)
+        samples = sampler.random(n= population_size)
         samples = qmc.scale(samples, [0,0], [1677,1677])
         samples = np.round(samples).astype(int)
         
         population = [tuple(chromosome) for chromosome in samples]
-        populations.append(population)
-    return np.array(populations)
+        init_populations.append(population)
+    return np.array(init_populations)
 
+def set_ga_instances(init_populations, num_of_generations, crossover_prop, mutation_prop,fitness_func,early_stopping_callback):
+    """
+    Creates the instances of the genetic algorithm. 
 
+    Args:
+        init_populations (numpy array): A list containig the random initial populations.
+        num_of_generations (int): The number of generations each population will run for.
+        crossover_prop (float): The propability with which every chromosome is chosen for the crossover operation.
+        mutation_prop (float): The propabilitywith which every chromosome is selected for the mutation operation.
+        fitness_func (function): THe fitness function.
+        early_stopping_callback (function): THe early stopping callback function.
+
+    Returns:
+        list: A list consisting of all the initialized instances of the pyGAD class.
+    """
+    ga_instances = []
     
+    for init_population in init_populations:
+        ga_instance = pygad.GA(initial_population=init_population,
+                                gene_space={'low':0, 'high':1677, 'step':1},
+                                num_generations= num_of_generations,
+                                crossover_probability= crossover_prop,
+                                num_parents_mating = len(init_population),
+                                fitness_func=fitness_func,
+                                parent_selection_type="rws",
+                                keep_elitism=1,
+                                crossover_type="single_point",
+                                mutation_type="random",
+                                mutation_probability=mutation_prop,
+                                mutation_by_replacement=True,
+                                on_generation=early_stopping_callback)
+        ga_instances.append(ga_instance)
+    return ga_instances
+
+def run_instances(ga_instances):
+    for instance in ga_instances:
+        
