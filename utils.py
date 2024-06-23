@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from  scipy.stats import qmc
 
 
 def print_dataframe_info(df):
@@ -39,7 +40,7 @@ def print_vectorizer_info(vectorizer, matrix, printMatrix):
     print(f"The unique values of the output matrix: {np.unique(matrix)}")
     return vocab_dict
 
-
+ 
 def find_k_nearest(k, matrix, incomplete_vector):
     """
     Finds the k closest inscriptions to a target inscription, using cosine similarity to compare them.
@@ -66,10 +67,29 @@ def find_k_nearest(k, matrix, incomplete_vector):
     
     return top_k_indices, top_k_values    
 
-# testing the find_k_nearest function
-index_matrix = np.array([[1,2,3],[4,6,6],[4,5,6]])
-test_target = np.array([7,8,9])
-indexes, values = find_k_nearest(2,index_matrix,test_target)
+def create_initial_populations(num_populations, num_chromosomes):
+    """
+    Creates the initial populations of the genetic algorithm by constructing the appropriate chromosomes, ranged within the specific values. 
+
+    Args:
+        num_populations (int): The number of initial populations .
+        num_chromosomes (int): The number of chromosomes per population.
+
+    Returns:
+        np array: An array consisting of all the initialized populations.
+        np array: The values of the cosine similarity between the incomplete target inscription and the ones closest to it.
+    """
+    populations = []
+    
+    for _ in range(num_populations):
+        sampler = qmc.LatinHypercube(d=2)
+        samples = sampler.random(n= num_chromosomes)
+        samples = qmc.scale(samples, [0,0], [1677,1677])
+        samples = np.round(samples).astype(int)
+        
+        population = [tuple(chromosome) for chromosome in samples]
+        populations.append(population)
+    return np.array(populations)
 
 
     
