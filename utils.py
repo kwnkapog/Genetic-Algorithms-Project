@@ -128,34 +128,62 @@ def set_ga_instances(init_populations, num_of_generations, crossover_prop, mutat
     return ga_instances
 
 def run_instances(ga_instances):
-    
+    """
+    Runs a list of instances and outputs certain metrics concerning the evolution.
+
+    Args:
+        ga_instances (list): A list containig the constructed instances of the genetic algorithm.
+
+    Returns:
+        list: A list consisting of all the fitness values of the best solution per generation per different initial populations.
+        GA obj: the solution that has the best fitness value overall.
+        float: The average number of generations the Genetic Algorithm converges to the best solution.
+    """
     all_generations_fitness = []
     best_solutions_per_instance = []
+    stopping_generations = []
     i = 0
     for instance in ga_instances:
         
         instance.run()
         print(f"Execution{i+1}")
-        solution, solution_fitness, solution_index = instance.best_solution()
+        best_solutions_per_instance.append(instance.best_solution())
         print(f"Stopped Execution at Generation {instance.best_solution_generation}.")
-
+        stopping_generations.append(instance.best_solution_generation)
+        
         generations_fitness = instance.best_solutions_fitness
         all_generations_fitness.append(generations_fitness)
         i+=1
     
+    # Start calculating the the metrics necessary for each instance. 
+    
+    # Padding of the fitness values to ensure homogenous lists.
     max_generations = max(len(fitness_list) for fitness_list in all_generations_fitness)
     all_generations_fitness = np.array([
         np.pad(fitness_list, (0, max_generations - len(fitness_list)), 'edge') 
         for fitness_list in all_generations_fitness
     ])
-    i+=1
     
-    return all_generations_fitness
+    # Find best solution over all initial populations.
+    best_solution_overall = max(best_solutions_per_instance, key=lambda x: x[1])
+    
+    # Find the mean stopping generation
+    mean_stopping_generation = np.array(stopping_generations)
+    mean_stopping_generation = np.mean(mean_stopping_generation)
+    
+    return all_generations_fitness, best_solution_overall, mean_stopping_generation
 
 def plot_evolution_curve(all_generations_fitness):
+    """
+    Plots the average fitness value of the best solutions per generation.
+
+    Args:
+        all_generations_fitness (list): A list containing the fitness values of the best solution per generation per different initial population.
+
+    """    
     num_generations = len(all_generations_fitness[0])
     avg_best_fitness_per_generation = np.mean(all_generations_fitness, axis=0)
-
+    
     plt.figure(figsize=(10, 6))
     plt.plot(range(num_generations), avg_best_fitness_per_generation, linestyle='-', color='b')
     plt.title('Evolution Curve of Best Solution')
