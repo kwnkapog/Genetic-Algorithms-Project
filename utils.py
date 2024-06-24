@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from  scipy.stats import qmc
 import pygad
+import matplotlib.pyplot as plt
 
 
 def print_dataframe_info(df):
@@ -122,10 +123,43 @@ def set_ga_instances(init_populations, num_of_generations, crossover_prop, mutat
                                 mutation_type="random",
                                 mutation_probability=mutation_prop,
                                 mutation_by_replacement=True,
-                                on_generation=early_stopping_callback)
+                                on_generation=early_stopping_callback,)
         ga_instances.append(ga_instance)
     return ga_instances
 
 def run_instances(ga_instances):
+    
+    all_generations_fitness = []
+    best_solutions_per_instance = []
+    i = 0
     for instance in ga_instances:
         
+        instance.run()
+        print(f"Execution{i+1}")
+        solution, solution_fitness, solution_index = instance.best_solution()
+        print(f"Stopped Execution at Generation {instance.best_solution_generation}.")
+
+        generations_fitness = instance.best_solutions_fitness
+        all_generations_fitness.append(generations_fitness)
+        i+=1
+    
+    max_generations = max(len(fitness_list) for fitness_list in all_generations_fitness)
+    all_generations_fitness = np.array([
+        np.pad(fitness_list, (0, max_generations - len(fitness_list)), 'edge') 
+        for fitness_list in all_generations_fitness
+    ])
+    i+=1
+    
+    return all_generations_fitness
+
+def plot_evolution_curve(all_generations_fitness):
+    num_generations = len(all_generations_fitness[0])
+    avg_best_fitness_per_generation = np.mean(all_generations_fitness, axis=0)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(num_generations), avg_best_fitness_per_generation, linestyle='-', color='b')
+    plt.title('Evolution Curve of Best Solution')
+    plt.xlabel('Generation')
+    plt.ylabel('Average Best Fitness')
+    plt.grid()
+    plt.show()

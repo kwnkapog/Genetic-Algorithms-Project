@@ -75,3 +75,5 @@ def early_stopping_callback(ga_instance):
 
 initial_populations = ul.create_initial_populations(10,20)
 ga_instances = ul.set_ga_instances(initial_populations, 1000, 0.6, 0.01, fitness_func, early_stopping_callback)
+gen_fitness = ul.run_instances(ga_instances)
+ul.plot_evolution_curve(gen_fitness)
