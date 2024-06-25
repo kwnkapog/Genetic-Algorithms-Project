@@ -173,12 +173,15 @@ def run_instances(ga_instances):
     
     return all_generations_fitness, best_solution_overall, mean_stopping_generation
 
-def plot_evolution_curve(all_generations_fitness):
+def plot_evolution_curve(all_generations_fitness, initial_population, crossover_chance, mutation_chance):
     """
     Plots the average fitness value of the best solutions per generation.
 
     Args:
         all_generations_fitness (list): A list containing the fitness values of the best solution per generation per different initial population.
+        initial_population (int): The number of individuals in the intial population.
+        crossover_chance (float): The propability of crossover.
+        mutation_chance (float): The propability of mutation.
 
     """    
     num_generations = len(all_generations_fitness[0])
@@ -186,7 +189,7 @@ def plot_evolution_curve(all_generations_fitness):
     
     plt.figure(figsize=(10, 6))
     plt.plot(range(num_generations), avg_best_fitness_per_generation, linestyle='-', color='b')
-    plt.title('Evolution Curve of Best Solution')
+    plt.title(f"Evolution Curve of Best Solution for Initial Population = {initial_population}, Crossover Propability = {crossover_chance}, Mutation Propability = {mutation_chance}")
     plt.xlabel('Generation')
     plt.ylabel('Average Best Fitness')
     plt.grid()
