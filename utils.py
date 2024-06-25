@@ -123,7 +123,8 @@ def set_ga_instances(init_populations, num_of_generations, crossover_prop, mutat
                                 mutation_type="random",
                                 mutation_probability=mutation_prop,
                                 mutation_by_replacement=True,
-                                on_generation=early_stopping_callback,)
+                                suppress_warnings=True,
+                                on_generation=early_stopping_callback)
         ga_instances.append(ga_instance)
     return ga_instances
 
@@ -146,7 +147,7 @@ def run_instances(ga_instances):
     for instance in ga_instances:
         
         instance.run()
-        print(f"Execution{i+1}")
+        print(f"Execution {i+1}:")
         best_solutions_per_instance.append(instance.best_solution())
         print(f"Stopped Execution at Generation {instance.best_solution_generation}.")
         stopping_generations.append(instance.best_solution_generation)
@@ -171,7 +172,11 @@ def run_instances(ga_instances):
     mean_stopping_generation = np.array(stopping_generations)
     mean_stopping_generation = np.mean(mean_stopping_generation)
     
-    return all_generations_fitness, best_solution_overall, mean_stopping_generation
+    # Find the mean best fitness value
+    avg_best_fitness_per_generation = np.mean(all_generations_fitness, axis=0)
+    best_mean_fitness_value = max(avg_best_fitness_per_generation)
+    
+    return all_generations_fitness, best_solution_overall, mean_stopping_generation,best_mean_fitness_value
 
 def plot_evolution_curve(all_generations_fitness, initial_population, crossover_chance, mutation_chance):
     """
