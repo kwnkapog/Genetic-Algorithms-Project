@@ -137,8 +137,9 @@ def run_instances(ga_instances):
 
     Returns:
         list: A list consisting of all the fitness values of the best solution per generation per different initial populations.
-        GA obj: the solution that has the best fitness value overall.
+        GA obj: The solution that has the best fitness value overall.
         float: The average number of generations the Genetic Algorithm converges to the best solution.
+        float: The best average fitness value of all the populations.
     """
     all_generations_fitness = []
     best_solutions_per_instance = []
